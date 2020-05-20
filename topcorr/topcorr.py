@@ -30,7 +30,7 @@ def tmfg(corr):
     """
     Constructs a TMFG from the supplied correlation matrix
     """
-
+    p = corr.shape[0]
     # Find the 4 most central vertices
     degree_centrality = corr.sum(axis=0)
     ind = np.argsort(degree_centrality)[::-1]
@@ -44,10 +44,10 @@ def tmfg(corr):
 
     # Add the tetrahedron in
     faces = set()
-    add_triangular_face(G, ind[0], set([ind[1], ind[3]]), corr, faces)
-    add_triangular_face(G, ind[1], set([ind[2], ind[3]]), corr, faces)
-    add_triangular_face(G, ind[0], set([ind[2], ind[3]]), corr, faces)
-    add_triangular_face(G, ind[2], set([ind[1], ind[3]]), corr, faces)
+    _add_triangular_face(G, ind[0], set([ind[1], ind[3]]), corr, faces)
+    _add_triangular_face(G, ind[1], set([ind[2], ind[3]]), corr, faces)
+    _add_triangular_face(G, ind[0], set([ind[2], ind[3]]), corr, faces)
+    _add_triangular_face(G, ind[2], set([ind[1], ind[3]]), corr, faces)
 
     faces.add(frozenset([ind[0], ind[1], ind[3]]))
     faces.add(frozenset( [ind[1], ind[2], ind[3]] ))
@@ -66,7 +66,7 @@ def tmfg(corr):
         for ind in faces:
             ind = list(ind)
             ind_arr = np.array(ind)
-            most_related = C[ind_arr, :][:, not_in_arr].sum(axis=0)
+            most_related = corr[ind_arr, :][:, not_in_arr].sum(axis=0)
             ind_2 = np.argsort(most_related)[::-1]
             curr_corr = most_related[ind_2[0]]
 
@@ -77,12 +77,15 @@ def tmfg(corr):
 
         starters_set = starters_set.union(set(max_i))
         not_in = not_in.difference(starters_set)
-        add_triangular_face(G, max_i[0], nodes_correlated_with, corr, faces)
-        calculate_new_faces(faces, max_i[0], nodes_correlated_with)
+        _add_triangular_face(G, max_i[0], nodes_correlated_with, corr, faces)
+        _calculate_new_faces(faces, max_i[0], nodes_correlated_with)
     
     return G
 
 def pmfg(corr):
+    """
+    Constructs a PMFG from the correlation matrix specified
+    """
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
     pmfg = nx.Graph()
     p = corr.shape[0]
@@ -99,14 +102,20 @@ def pmfg(corr):
 
     return pmfg
 
-def _in_same_component(components, idx_i, idx_j):
+def _in_same_component(components, i, j):
+    """
+    Checks to see if nodes i and j are in the same component in the MST
+    """
     for c in components:
-        if idx_i in c and idx_j in c:
+        if i in c and j in c:
             return True
 
     return False
 
 def _merge_components(components, i, j):
+    """
+    Merges the components that contain nodes i and j
+    """
     c1 = None
     c2 = None
     c1_i = None
@@ -126,11 +135,12 @@ def _merge_components(components, i, j):
     return components
     
 def mst(corr):
+    """
+    Constructs a minimum spanning tree from the specified correlation matrix
+    """
     p = D.shape[0]
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
-    #vals = sort_coo(D)
     components = [set([x]) for x in range(p)]
-    M = dok_matrix((p, p))
     mst_G = nx.Graph()
     num = 0
     for v in vals:
