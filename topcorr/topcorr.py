@@ -6,6 +6,19 @@ def _calculate_new_faces(faces, new, old_set):
     """
     Calculates the new triangular faces for the network when we 
     add in new
+
+    Parameters
+    -----------
+    faces : list
+        a list of the faces present in the graph
+    new : int
+        the node id that is being added to the face
+    old_set : set
+        the old face that the node is being added to
+
+    Returns
+    -------
+    None
     """
     faces.remove(frozenset(old_set))
 
@@ -16,6 +29,21 @@ def _calculate_new_faces(faces, new, old_set):
 def _add_triangular_face(G, new, old_set, C, faces):
     """
     Adds a new triangle to the networkx graph G
+
+    Parameters
+    -----------
+    G : networkx graph
+        the networkx graph to add the new face to
+    new : int
+        the node id that is being added to the face
+    old_set : set
+        the old face that the node is being added to
+    faces : list
+        a list of the faces present in the graph
+
+    Returns
+    -------
+    None
     """
     if isinstance(new, collections.Sized):
         raise ValueError("New should be a scaler")
@@ -28,6 +56,16 @@ def _add_triangular_face(G, new, old_set, C, faces):
 def tmfg(corr):
     """
     Constructs a TMFG from the supplied correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix to threshold
+
+    Returns
+    -------
+    networkx graph
+        The Triangular Maximally Filtered Graph
     """
     p = corr.shape[0]
     # Find the 4 most central vertices
@@ -84,6 +122,16 @@ def tmfg(corr):
 def pmfg(corr):
     """
     Constructs a PMFG from the correlation matrix specified
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix to threshold
+
+    Returns
+    -------
+    networkx graph
+        The Planar Maximally Filtered Graph
     """
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
     pmfg = nx.Graph()
@@ -107,6 +155,20 @@ def pmfg(corr):
 def _in_same_component(components, i, j):
     """
     Checks to see if nodes i and j are in the same component in the MST
+
+    Parameters
+    -----------
+    components : list 
+        list containing the current components of the MST
+    i : int
+        integer of node i
+    j : int
+        integer of node j
+    
+    Returns
+    -------
+    bool
+        True if i and j are in the same component, False otherwise
     """
     for c in components:
         if i in c and j in c:
@@ -117,6 +179,20 @@ def _in_same_component(components, i, j):
 def _merge_components(components, i, j):
     """
     Merges the components that contain nodes i and j
+
+    Parameters
+    -----------
+    components : list 
+        list containing the current components of the MST
+    i : int
+        integer of node i
+    j : int
+        integer of node j
+    
+    Returns
+    -------
+    list
+        list containing the new components of the MST
     """
     c1 = None
     c2 = None
@@ -139,6 +215,16 @@ def _merge_components(components, i, j):
 def mst(corr):
     """
     Constructs a minimum spanning tree from the specified correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix to threshold
+
+    Returns
+    -------
+    networkx graph
+        The Minimum Spanning Tree
     """
     p = corr.shape[0]
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
@@ -159,3 +245,25 @@ def mst(corr):
             break
 
     return mst_G
+
+def threshold(corr, threshold, binary=False, absolute=True):
+    """
+    Thresholds the correlation matrix at the set level
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix to threshold
+    threshold : float
+        threshold at which to keep values
+    binary : bool, optional
+        whether the nonzero values are set to 1 or left as floats (default False)
+    absolute : bool, optional
+        whether to threshold the plain or absolute values (default True)
+    
+    Returns
+    -------
+    array_like
+        thresholded matrix
+    """
+    pass
