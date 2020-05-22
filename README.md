@@ -6,6 +6,10 @@ A small Python library for constructing filtered correlation networks
 
 The package requires networkx and numpy. Scikit-learn is used in some of the examples to generate correlation matrices.
 
+It can be installed using pip:
+
+pip install topcorr
+
 An example for creating a PMFG
 ```
 import topcorr
