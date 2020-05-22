@@ -4,6 +4,27 @@ A small Python library for constructing filtered correlation networks
 
 ## Getting Started
 
+The package requires networkx and numpy. Scikit-learn is used in some of the examples to generate correlation matrices.
+
+An example for creating a PMFG
+```
+import topcorr
+import networkx as nx
+import numpy as np
+from sklearn.datasets import make_spd_matrix
+
+p = 50
+n = 200
+C = make_spd_matrix(p)
+X = np.random.multivariate_normal(np.zeros(p), C, n)
+corr = np.corrcoef(X.T)
+
+pmfg_G = topcorr.pmfg(corr)
+```
+
+The other methods work in much the same way (bar thresholding) - put in a correlation matrix and
+it will return a networkx graph 
+
 ## Testing
 
 If you're interested in running the tests they can be found in the /tests/ folder and are to
