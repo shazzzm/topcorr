@@ -12,7 +12,7 @@ import topcorr
 import networkx as nx
 import planarity
 
-class TestToppCorr(unittest.TestCase):
+class TestTopCorr(unittest.TestCase):
     def _construct_tmfg_with_r(self, corr):
         """
         Constructs a TMFG using the implementation provided
@@ -45,7 +45,7 @@ class TestToppCorr(unittest.TestCase):
         """
         Tests the PMFG - the way we're going to do this is by generating a
         correlation matrix that is planar and see if the algorithm can pick it up.
-        In this case we choose a goldner-harary graph
+        In this case we choose a goldner-harary graph https://en.wikipedia.org/wiki/Goldner%E2%80%93Harary_graph
         """
         p = 11
         mean = np.zeros(p)
@@ -61,9 +61,32 @@ class TestToppCorr(unittest.TestCase):
 
         X = np.random.multivariate_normal(mean, corr_true, 2000)
         corr = np.corrcoef(X.T)
-        corr[corr < 0.1] = 0
+        #corr[corr < 0.1] = 0
         corr_G = nx.from_numpy_array(corr)
         pmfg_G = topcorr.pmfg(corr)
         corr_pmfg = nx.to_numpy_array(pmfg_G, weight=None)
         assert_array_almost_equal(corr_pmfg, corr_true_binary)
+
+    def test_mst(self):
+        """
+        Tests the MST by comparing it to the networkx implementation
+        """
+        p = 50
+        mean = np.zeros(p)
+        M = make_spd_matrix(p)
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+        nodes = list(np.arange(p))
+        # For the networkx MST we have to convert the correlation graph
+        # into a distance one
+        D = np.sqrt(2 - 2*corr)
+        G = nx.from_numpy_array(D)
+        mst_G = nx.minimum_spanning_tree(G)
+
+        topcorr_mst_G = topcorr.mst(corr)
+
+        mst_nx_M = nx.to_numpy_array(mst_G, nodelist=nodes, weight=None)
+        mst_topcorr_M = nx.to_numpy_array(topcorr_mst_G, nodelist=nodes, weight=None)
+
+        assert_array_almost_equal(mst_nx_M, mst_topcorr_M)
 

@@ -96,7 +96,6 @@ def pmfg(corr):
             continue
 
         pmfg.add_edge(idx_i, idx_j, weight=corr[idx_i, idx_j])
-
         if not nx.check_planarity(pmfg)[0]:
             pmfg.remove_edge(idx_i, idx_j)
 
@@ -141,21 +140,22 @@ def mst(corr):
     """
     Constructs a minimum spanning tree from the specified correlation matrix
     """
-    p = D.shape[0]
+    p = corr.shape[0]
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
     components = [set([x]) for x in range(p)]
     mst_G = nx.Graph()
-    num = 0
     for v in vals:
         idx_i, idx_j = np.unravel_index(v, (p, p))
+        if idx_i == idx_j:
+            continue
+
         #idx_i, idx_j, _ = v
-        if in_same_component(components, idx_i, idx_j):
+        if _in_same_component(components, idx_i, idx_j):
             continue
         else:
-            mst_G.add_edge(idx_i, idx_j, corr[idx_i, idx_j])
-            num += 1
-            components = merge_components(components, idx_i, idx_j)
-        if num == p - 1:
+            mst_G.add_edge(idx_i, idx_j, weight=corr[idx_i, idx_j])
+            components = _merge_components(components, idx_i, idx_j)
+        if len(mst_G.edges()) == p - 1:
             break
 
     return mst_G
