@@ -91,16 +91,20 @@ class TestTopCorr(unittest.TestCase):
 
     def test_threshold(self):
         """
-        Tests the thresholding of the correlation matrix
+        Tests the thresholding of the correlation matrix - here we add a 
+        bit of noise to a generated sparse matrix and see if we can recover 
+        the non zeros
         """
-        p = 20
+        p = 50
         mean = np.zeros(p)
         M = make_sparse_spd_matrix(p, alpha=0.95, norm_diag = True, smallest_coef=0.7)
-
-        X = np.random.multivariate_normal(mean, M, 2000)
-        corr = np.corrcoef(X.T)
-
-        threshold = topcorr.threshold(corr, 0.25, binary=True)
+        t = np.abs(M).min()
+        noise = 0.5*t * np.random.rand(p, p)
+        M_noise = noise + M
+        print(t)
+        #print(M)
+        #print(M_noise)
+        threshold = topcorr.threshold(M_noise, t, binary=True)
         M[np.abs(M) > 0] = 1
         assert_array_almost_equal(M, threshold)
 

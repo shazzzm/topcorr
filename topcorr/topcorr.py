@@ -265,7 +265,7 @@ def threshold(corr, threshold, binary=False, absolute=True):
     array_like
         thresholded matrix
     """
-    
+    corr = corr.copy()
     if absolute:
         corr[np.abs(corr) < threshold] = 0
     else:
