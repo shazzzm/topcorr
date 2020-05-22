@@ -6,6 +6,13 @@ A small Python library for constructing filtered correlation networks
 
 ## Testing
 
+If you're interested in running the tests they can be found in the /tests/ folder and are to
+be run with nose2. 
+
+For the TMFG the authors have provided an R implementation, so we test against that. This requires
+that you install rpy2 and the NetworkToolbox package. The other tests will also require the installation
+of sklearn. 
+
 ## Authors
 
 * **Tristan Millington**
