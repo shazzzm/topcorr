@@ -1,7 +1,6 @@
 import networkx as nx
 import collections
 import numpy as np
-import planarity
 
 def _calculate_new_faces(faces, new, old_set):
     """
@@ -89,14 +88,18 @@ def pmfg(corr):
     vals = np.argsort(corr.flatten(), axis=None)[::-1]
     pmfg = nx.Graph()
     p = corr.shape[0]
-    #vals = sort_coo(D)
+    pmfg.add_nodes_from(range(p))
     for v in vals:
         idx_i, idx_j = np.unravel_index(v, (p, p))
-        pmfg.add_edge(idx_i, idx_j, corr[i, j])
-
-        if not planarity.is_planar(pmfg):
-            pmfg.remove_edge(idx_i, idx_j)
         
+        if idx_i == idx_j:
+            continue
+
+        pmfg.add_edge(idx_i, idx_j, weight=corr[idx_i, idx_j])
+
+        if not nx.check_planarity(pmfg)[0]:
+            pmfg.remove_edge(idx_i, idx_j)
+
         if len(pmfg.edges()) == 3 *  (p - 2):
             break
 
