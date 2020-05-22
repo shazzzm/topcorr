@@ -101,9 +101,6 @@ class TestTopCorr(unittest.TestCase):
         t = np.abs(M).min()
         noise = 0.5*t * np.random.rand(p, p)
         M_noise = noise + M
-        print(t)
-        #print(M)
-        #print(M_noise)
         threshold = topcorr.threshold(M_noise, t, binary=True)
         M[np.abs(M) > 0] = 1
         assert_array_almost_equal(M, threshold)
