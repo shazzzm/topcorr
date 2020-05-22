@@ -235,7 +235,6 @@ def mst(corr):
         if idx_i == idx_j:
             continue
 
-        #idx_i, idx_j, _ = v
         if _in_same_component(components, idx_i, idx_j):
             continue
         else:
@@ -266,4 +265,13 @@ def threshold(corr, threshold, binary=False, absolute=True):
     array_like
         thresholded matrix
     """
-    pass
+    
+    if absolute:
+        corr[np.abs(corr) < threshold] = 0
+    else:
+        corr[corr < threshold] = 0
+
+    if binary:
+        corr[np.abs(corr) > 0] = 1
+
+    return corr

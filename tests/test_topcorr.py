@@ -1,13 +1,12 @@
 
 import unittest
-from sklearn.datasets import make_spd_matrix
+from sklearn.datasets import make_spd_matrix, make_sparse_spd_matrix
 import numpy as np
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
 import rpy2.rinterface as rinterface
-from sklearn.utils.testing import assert_array_almost_equal
-from sklearn.utils.testing import assert_array_less
+from numpy.testing.utils import assert_array_almost_equal
 import topcorr
 import networkx as nx
 import planarity
@@ -89,4 +88,19 @@ class TestTopCorr(unittest.TestCase):
         mst_topcorr_M = nx.to_numpy_array(topcorr_mst_G, nodelist=nodes, weight=None)
 
         assert_array_almost_equal(mst_nx_M, mst_topcorr_M)
+
+    def test_threshold(self):
+        """
+        Tests the thresholding of the correlation matrix
+        """
+        p = 20
+        mean = np.zeros(p)
+        M = make_sparse_spd_matrix(p, alpha=0.95, norm_diag = True, smallest_coef=0.7)
+
+        X = np.random.multivariate_normal(mean, M, 2000)
+        corr = np.corrcoef(X.T)
+
+        threshold = topcorr.threshold(corr, 0.25, binary=True)
+        M[np.abs(M) > 0] = 1
+        assert_array_almost_equal(M, threshold)
 
