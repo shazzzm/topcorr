@@ -32,9 +32,9 @@ class TestTopCorr(unittest.TestCase):
         M = make_spd_matrix(p)
         X = np.random.multivariate_normal(mean, M, 200)
         corr = np.corrcoef(X.T)
-        C = np.abs(corr)
-        G = topcorr.tmfg(C)
-        tmfg_r = self._construct_tmfg_with_r(C)
+        #C = np.abs(corr)
+        G = topcorr.tmfg(corr, absolute=True)
+        tmfg_r = self._construct_tmfg_with_r(corr)
         tmfg_r[np.abs(tmfg_r) > 0] = 1
         tmfg_me = nx.to_numpy_array(G, weight=None)
         np.fill_diagonal(tmfg_me, 1)

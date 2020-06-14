@@ -36,6 +36,8 @@ def _add_triangular_face(G, new, old_set, C, faces):
         the networkx graph to add the new face to
     new : int
         the node id that is being added to the face
+    C : array_like
+        correlation matrix
     old_set : set
         the old face that the node is being added to
     faces : list
@@ -53,14 +55,16 @@ def _add_triangular_face(G, new, old_set, C, faces):
     for j in old_set:
         G.add_edge(new, j, weight=C[new, j])
 
-def tmfg(corr):
+def tmfg(corr, absolute=False):
     """
     Constructs a TMFG from the supplied correlation matrix
 
     Parameters
     -----------
     corr : array_like
-        p x p matrix - correlation matrix to threshold
+        p x p matrix - correlation matrix
+    absolute : bool
+        whether to use the absolute correlation values for chooisng weights or normal ones
 
     Returns
     -------
@@ -68,8 +72,14 @@ def tmfg(corr):
         The Triangular Maximally Filtered Graph
     """
     p = corr.shape[0]
+
+    if absolute:
+        weight_corr = np.abs(corr)
+    else:
+        weight_corr = corr
+
     # Find the 4 most central vertices
-    degree_centrality = corr.sum(axis=0)
+    degree_centrality = weight_corr.sum(axis=0)
     ind = np.argsort(degree_centrality)[::-1]
     starters = ind[0:4]
     starters_set = set(starters)
@@ -103,7 +113,7 @@ def tmfg(corr):
         for ind in faces:
             ind = list(ind)
             ind_arr = np.array(ind)
-            most_related = corr[ind_arr, :][:, not_in_arr].sum(axis=0)
+            most_related = weight_corr[ind_arr, :][:, not_in_arr].sum(axis=0)
             ind_2 = np.argsort(most_related)[::-1]
             curr_corr = most_related[ind_2[0]]
 
@@ -126,7 +136,7 @@ def pmfg(corr):
     Parameters
     -----------
     corr : array_like
-        p x p matrix - correlation matrix to threshold
+        p x p matrix - correlation matrix
 
     Returns
     -------
@@ -219,7 +229,7 @@ def mst(corr):
     Parameters
     -----------
     corr : array_like
-        p x p matrix - correlation matrix to threshold
+        p x p matrix - correlation matrix
 
     Returns
     -------
