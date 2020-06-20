@@ -22,6 +22,16 @@ class TestTopCorr(unittest.TestCase):
         tmfg_corr = nt.TMFG(corr, "pairwise")
         return np.array(tmfg_corr[0])
 
+    def _construct_dependency_network_with_r(self, X):
+        """
+        Constructs a dependency network from the NetworkToolbox R
+        package
+        """
+        rpy2.robjects.numpy2ri.activate()
+        nt = importr('NetworkToolbox')
+        depend_corr = nt.depend(X, False, "none")
+        return np.array(depend_corr)
+
     def test_tmfg(self):
         """
         Compares out TMFG algorithm to the one in the Network Toolbox
@@ -105,3 +115,18 @@ class TestTopCorr(unittest.TestCase):
         M[np.abs(M) > 0] = 1
         assert_array_almost_equal(M, threshold)
 
+    def test_dependency(self):
+        """
+        Tests the dependency network by comparing it to the NetworkToolbox method
+        """
+        p = 50
+        mean = np.zeros(p)
+        M = make_sparse_spd_matrix(p, alpha=0.95, norm_diag = True, smallest_coef=0.7)
+
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+
+        D_topcorr = topcorr.dependency_network(corr)
+        D_networktoolbox = self._construct_dependency_network_with_r(X)
+
+        assert_array_almost_equal(D_networktoolbox, D_topcorr)

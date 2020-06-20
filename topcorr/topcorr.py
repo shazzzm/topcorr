@@ -285,3 +285,62 @@ def threshold(corr, threshold, binary=False, absolute=True):
         corr[np.abs(corr) > 0] = 1
 
     return corr
+
+def calculate_partial_correlation(corr, i, j, k):
+    """
+    Calculates the partial correlation between i and jm
+    given k
+
+    Parameters
+    -----------
+    corr : array_like
+        correlation matrix
+    i : int
+        first variable
+    j : int
+        second variable
+    k : int
+        variable to remove the effect of
+    """
+    dem = (1 - corr[i, k]**2) * (1 - corr[k, j]**2)
+    return (corr[i, j] - corr[i, k] * corr[k, j]) / np.sqrt(dem)
+
+def dependency_network(corr):
+    """
+    Calculates a dependency network - see "Dominating Clasp of the Financial
+    Sector Revealed by Partial Correlation Analysis of the Stock Market"
+    for more details
+
+    Parameters
+    -----------
+    corr : array_like
+        correlation matrix
+
+    Returns
+    -------
+    array_like
+        dependency network adjacency matrix
+    """ 
+    p = corr.shape[0]
+    ind = np.arange(p)
+    D = np.zeros((p, p, p))
+    for i in range(p):
+        for j in range(p):
+            for k in range(p):
+                if i == j or i == k or j == k:
+                    continue
+                D[i, j, k] = (corr[i, j] - calculate_partial_correlation(corr, i, j, k))
+    
+    for i in range(p):
+        for j in range(p):
+            D[i, j, j] = 1
+
+    # Next we filter D down
+    dependency_network = np.zeros((p, p))
+    for i in range(p):
+        for k in range(p):
+            if i == k:
+                continue
+            dependency_network[k, i] = D[i, i!=ind, k].sum() / (p-1)
+
+    return dependency_network
