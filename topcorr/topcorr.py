@@ -345,7 +345,7 @@ def dependency_network(corr):
 
     return dependency_network
 
-def knn_network(corr, k):
+def knn(corr, k):
     """
     Calculates a k-Nearest Neighbours graph from the given correlation
     matrix - each node is allowed k edges
@@ -357,7 +357,7 @@ def knn_network(corr, k):
 
     Returns
     -------
-    array_like
+    Networkx Graph
         k-NN network adjacency matrix
     """ 
     p = corr.shape[0]
@@ -375,4 +375,31 @@ def knn_network(corr, k):
             G.add_edge(i, j, weight=corr[i, j])
             num += 1
     return G
+
+def partial_correlation(corr):
+    """
+    Calculates a partial correlation network from the given correlation matrix
+    
+    Parameters
+    -----------
+    corr : array_like
+        correlation matrix
+
+    Returns
+    -------
+    array_like
+        partial correlation matrix
+    """ 
+    p = corr.shape[0]
+    prec = np.linalg.inv(corr)
+    partial_correlation = np.zeros((p, p))
+    
+    for i in range(p):
+        for j in range(p):
+            partial_correlation[i, j] = - prec[i, j] / (np.sqrt(prec[i, i] * prec[j, j]))
+
+    np.fill_diagonal(partial_correlation, 1)
+
+    return partial_correlation
+
     

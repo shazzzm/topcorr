@@ -143,10 +143,24 @@ class TestTopCorr(unittest.TestCase):
         X = np.random.multivariate_normal(mean, M, 200)
         corr = np.corrcoef(X.T)
 
-        G = topcorr.knn_network(corr, k)
+        G = topcorr.knn(corr, k)
         corr_knn = nx.to_numpy_array(G)
 
         for i in range(p):
             assert(np.count_nonzero(corr_knn[:, i]) >= k)
 
         assert(np.count_nonzero(corr_knn) < 2*k*p)
+
+    def test_partial_correlation(self):
+        p = 10
+        mean = np.zeros(p)
+        K = make_sparse_spd_matrix(p, alpha=0.9, norm_diag = True, smallest_coef=0.7)
+        C = np.linalg.inv(K)
+        ind = np.nonzero(K)
+        t = 0.8*np.abs(K[ind]).min()
+
+        partial_correlation = topcorr.partial_correlation(C)
+
+        threshold = topcorr.threshold(partial_correlation, t, binary=True)
+        K[np.abs(K) > 0] = 1
+        assert_array_almost_equal(K, threshold)
