@@ -344,3 +344,35 @@ def dependency_network(corr):
             dependency_network[k, i] = D[i, i!=ind, k].sum() / (p-1)
 
     return dependency_network
+
+def knn_network(corr, k):
+    """
+    Calculates a k-Nearest Neighbours graph from the given correlation
+    matrix - each node is allowed k edges
+
+    Parameters
+    -----------
+    corr : array_like
+        correlation matrix
+
+    Returns
+    -------
+    array_like
+        k-NN network adjacency matrix
+    """ 
+    p = corr.shape[0]
+    G = nx.Graph()
+    #ind = np.arange(p)
+    for i in range(p):
+        edges = corr[:, i]
+        sort = np.argsort(edges)[::-1]
+        num = 0
+        for j in sort:
+            if num == k:
+                break
+            if j == i:
+                continue
+            G.add_edge(i, j, weight=corr[i, j])
+            num += 1
+    return G
+    

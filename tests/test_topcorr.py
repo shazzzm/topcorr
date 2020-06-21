@@ -6,7 +6,7 @@ import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
 import rpy2.rinterface as rinterface
-from numpy.testing.utils import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_equal
 import topcorr
 import networkx as nx
 import planarity
@@ -130,3 +130,23 @@ class TestTopCorr(unittest.TestCase):
         D_networktoolbox = self._construct_dependency_network_with_r(X)
 
         assert_array_almost_equal(D_networktoolbox, D_topcorr)
+
+    def test_knn(self):
+        """
+        Tests the kNN network
+        """
+        p = 5
+        k = 2
+        mean = np.zeros(p)
+        M = make_sparse_spd_matrix(p, alpha=0.95, norm_diag = True, smallest_coef=0.7)
+
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+
+        G = topcorr.knn_network(corr, k)
+        corr_knn = nx.to_numpy_array(G)
+
+        for i in range(p):
+            assert(np.count_nonzero(corr_knn[:, i]) >= k)
+
+        assert(np.count_nonzero(corr_knn) < 2*k*p)
