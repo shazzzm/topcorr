@@ -55,6 +55,7 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * TMFG
 * Thresholding
 * Dependency Network
+* k-Nearest Neighbours Network
 
 ## References
 * [Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). A tool for filtering information in complex systems. Proceedings of the National Academy of Sciences of the United States of America, 102(30), 10421-10426.](http://www.pnas.org/content/102/30/10421)
@@ -63,3 +64,4 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * [Boginski V., Butenko S., Pardalos P. (2005) Statistical analysis of financial networks, Computational Statistics & Data Analysis, Volume 48, Issue 2, 2005,Pages 431-44](https://www.sciencedirect.com/science/article/abs/pii/S0167947304000258)
 * [Kenett YN, Kenett DY, Ben-Jacob E, Faust M. Global and local features of semantic networks: evidence from the Hebrew mental lexicon. PLoS One. 2011;6(8):e23912. doi:10.1371/journal.pone.0023912](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0023912)
 * [Kenett DY, Tumminello M, Madi A, Gur-Gershgoren G, Mantegna RN, et al. (2010) Dominating Clasp of the Financial Sector Revealed by Partial Correlation Analysis of the Stock Market. PLOS ONE 5(12): e15032. https://doi.org/10.1371/journal.pone.0015032](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015032)
+* [Chun-Xiao Nie, Fu-Tie Song. Analyzing the stock market based on the structure of kNN network, Chaos, Solitons & Fractals, Volume 113, 2018](https://www.sciencedirect.com/science/article/pii/S0960077918302753)
