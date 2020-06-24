@@ -378,7 +378,7 @@ def knn(corr, k):
 
 def partial_correlation(corr):
     """
-    Calculates a partial correlation network from the given correlation matrix
+    Calculates a partial correlation matrix from the given correlation matrix
     
     Parameters
     -----------
@@ -402,4 +402,30 @@ def partial_correlation(corr):
 
     return partial_correlation
 
-    
+def affinity(corr):
+    """
+    Calculates the affinity correlation matrix from the given correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        correlation matrix
+
+    Returns
+    -------
+    array_like
+        affinity correlation matrix
+    """
+    p = corr.shape[0]
+    meta_correlation = np.zeros((p, p))
+    ind = np.arange(p)
+    for i in range(p):
+        for j in range(i,p):
+            val = np.corrcoef(corr[i, ind!=i], corr[j, ind!=i])[0, 1]
+            meta_correlation[i, j] = val
+            meta_correlation[j, i] = val
+
+    A = np.multiply(meta_correlation, corr)
+
+    return A 
+ 

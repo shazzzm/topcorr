@@ -57,6 +57,7 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * Dependency Network
 * k-Nearest Neighbours Network
 * Partial Correlation
+* Affinity Matrix
 
 ## References
 * [Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). A tool for filtering information in complex systems. Proceedings of the National Academy of Sciences of the United States of America, 102(30), 10421-10426.](http://www.pnas.org/content/102/30/10421)
@@ -67,3 +68,6 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * [Kenett DY, Tumminello M, Madi A, Gur-Gershgoren G, Mantegna RN, et al. (2010) Dominating Clasp of the Financial Sector Revealed by Partial Correlation Analysis of the Stock Market. PLOS ONE 5(12): e15032. https://doi.org/10.1371/journal.pone.0015032](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015032)
 * [Chun-Xiao Nie, Fu-Tie Song. Analyzing the stock market based on the structure of kNN network, Chaos, Solitons & Fractals, Volume 113, 2018](https://www.sciencedirect.com/science/article/pii/S0960077918302753)
 * [Millington, T., Niranjan, M. Partial correlation financial networks. Appl Netw Sci 5, 11 (2020). https://doi.org/10.1007/s41109-020-0251-z](https://link.springer.com/article/10.1007/s41109-020-0251-z)
+* [Baruchi I, Grossman D, Volman V, et al. Functional holography analysis: simplifying the complexity of dynamical networks. Chaos. 2006;16(1):015112. doi:10.1063/1.2183408](https://aip.scitation.org/doi/10.1063/1.2183408)
+* [Kenett, D. Y., Shapira, Y., Madi, A., Bransburg-Zabary, S., Gur-Gershgoren, G., & Ben-Jacob, E. (2010). Dynamics of stock market correlations. AUCO Czech Economic Review, 4(3), 330-341.](http://cer.fsv.cuni.cz/mag/article/show/id/97)
+

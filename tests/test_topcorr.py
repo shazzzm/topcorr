@@ -133,7 +133,7 @@ class TestTopCorr(unittest.TestCase):
 
     def test_knn(self):
         """
-        Tests the kNN network
+        Tests the kNN network by ensuring the resulting network meets the constraints
         """
         p = 5
         k = 2
@@ -152,6 +152,10 @@ class TestTopCorr(unittest.TestCase):
         assert(np.count_nonzero(corr_knn) < 2*k*p)
 
     def test_partial_correlation(self):
+        """
+        Tests the partial correlation network by ensuring the resulting partial correlation
+        matrix correctly recovers the nonzeros from a sparse underlying precision matrix
+        """
         p = 10
         mean = np.zeros(p)
         K = make_sparse_spd_matrix(p, alpha=0.9, norm_diag = True, smallest_coef=0.7)
@@ -164,3 +168,16 @@ class TestTopCorr(unittest.TestCase):
         threshold = topcorr.threshold(partial_correlation, t, binary=True)
         K[np.abs(K) > 0] = 1
         assert_array_almost_equal(K, threshold)
+
+    def test_affintiy(self):
+        """
+        Tests the affinity matrix method by ensuring that it runs. Currently a bit
+        stumped for a good test.
+        """
+        p = 10
+        mean = np.zeros(p)
+        M = make_spd_matrix(p)
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+
+        A = topcorr.affinity(corr)
