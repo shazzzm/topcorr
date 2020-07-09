@@ -58,6 +58,7 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * k-Nearest Neighbours Network
 * Partial Correlation
 * Affinity Matrix
+* Average Linkage MST
 
 ## References
 * [Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). A tool for filtering information in complex systems. Proceedings of the National Academy of Sciences of the United States of America, 102(30), 10421-10426.](http://www.pnas.org/content/102/30/10421)
@@ -70,4 +71,5 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * [Millington, T., Niranjan, M. Partial correlation financial networks. Appl Netw Sci 5, 11 (2020). https://doi.org/10.1007/s41109-020-0251-z](https://link.springer.com/article/10.1007/s41109-020-0251-z)
 * [Baruchi I, Grossman D, Volman V, et al. Functional holography analysis: simplifying the complexity of dynamical networks. Chaos. 2006;16(1):015112. doi:10.1063/1.2183408](https://aip.scitation.org/doi/10.1063/1.2183408)
 * [Kenett, D. Y., Shapira, Y., Madi, A., Bransburg-Zabary, S., Gur-Gershgoren, G., & Ben-Jacob, E. (2010). Dynamics of stock market correlations. AUCO Czech Economic Review, 4(3), 330-341.](http://cer.fsv.cuni.cz/mag/article/show/id/97)
+* [Tumminello, M., Coronnello, C., Lillo, F., Micciche, S., & Mantegna, R. N. (2007). Spanning trees and bootstrap reliability estimation in correlation-based networks. International Journal of Bifurcation and Chaos, 17(07), 2319-2329.](https://www.worldscientific.com/doi/abs/10.1142/S0218127407018415)
 
