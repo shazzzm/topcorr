@@ -429,3 +429,116 @@ def affinity(corr):
 
     return A 
  
+def _redefine_matrix(Q, components, h, k, weight):
+    """
+    Reconstructs the correlation matrix as instructed in "SPANNING TREES AND 
+    BOOTSTRAP RELIABILITY ESTIMATION IN CORRELATION-BASED NETWORKS" in equation 1
+
+    Parameters
+    -----------
+    Q : array_like
+        correlation matrix
+    components : list
+        list of sets containing the components in the MST
+    h : set
+        the first of the components to be merged together
+    k : set
+        the second of the components to be merged together
+    weight : float
+        the weight to put on the new edge
+
+    Returns
+    -------
+    array_like
+        new correlation matrix
+    """
+    p = Q.shape[0]
+    new_Q = np.zeros((p, p))
+
+    new_component = h.union(k)
+
+    for i in range(p):
+        for j in range(i+1, p):
+            if (i in h and j in k) or (j in h and i in k):
+                new_Q[i, j] = weight
+                new_Q[j, i] = weight
+            elif (i in new_component and j not in new_component):
+                # Find component that j is in
+                j_component = np.array(list(_get_component(components, j)))
+                z = Q[j_component, :]
+                new_val = z[:, np.array(list(new_component))].mean()
+                new_Q[i, j] = new_val
+                new_Q[j, i] = new_val
+            else:
+                new_Q[i, j] = Q[i, j]
+                new_Q[j, i] = Q[i, j]
+
+    return new_Q
+
+
+def _get_component_index(components, idx_i):
+    """
+    Gets the index of the component that i is part of
+    """
+    for i,c in enumerate(components):
+        if idx_i in c:
+            return i
+
+def _get_component(components, idx_i):
+    """
+    Gets the component that i is part of
+    """
+    for c in components:
+        if idx_i in c:
+            return c
+
+def almst(corr):
+    """
+    Constructs an average linkage minimum spanning tree from the specified correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix
+
+    Returns
+    -------
+    networkx graph
+        The Minimum Spanning Tree
+    """
+    p = corr.shape[0]
+    components = [set([x]) for x in range(p)]
+    mst_G = nx.Graph()
+    num = 0
+    Q = corr.copy()
+
+    while num < p - 1:
+        ind = np.argsort(Q, axis=None)[::-1]
+        for i in ind:
+            idx_i, idx_j = np.unravel_index(i, (p, p))
+
+            if _in_same_component(components, idx_i, idx_j):
+                continue
+            else:
+                break
+
+        # Find out what components i and j are part of
+        component_i_idx = _get_component_index(components, idx_i)
+        component_j_idx = _get_component_index(components, idx_j)
+
+        # Figure out which correlation is the largest between the components
+        component_i = np.array(list(components[component_i_idx]))
+        component_j = np.array(list(components[component_j_idx]))
+
+        max_corr_idx = corr[component_i, :][:, component_j].argmax()
+        idx_comp_i, idx_comp_j = np.unravel_index(max_corr_idx, (len(component_i), len(component_j)))
+        max_corr_i = component_i[idx_comp_i]
+        max_corr_j = component_j[idx_comp_j]
+
+        mst_G.add_edge(max_corr_i, max_corr_j, weight=corr[max_corr_i, max_corr_j])
+        
+        Q = _redefine_matrix(Q, components, _get_component(components, idx_i), _get_component(components, idx_j), corr[max_corr_i, max_corr_j])
+        components = _merge_components(components, max_corr_i, max_corr_j)
+        num+=1
+
+    return mst_G

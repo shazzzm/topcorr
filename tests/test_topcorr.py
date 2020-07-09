@@ -181,3 +181,22 @@ class TestTopCorr(unittest.TestCase):
         corr = np.corrcoef(X.T)
 
         A = topcorr.affinity(corr)
+
+    def test_al_mst(self):
+        """
+        Tests the average linkage MST by ensuring that it runs
+        """
+        p = 200
+        mean = np.zeros(p)
+        M = make_spd_matrix(p)
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+        nodes = list(np.arange(p))
+        # For the networkx MST we have to convert the correlation graph
+        # into a distance one
+
+        topcorr_mst_G = topcorr.almst(corr)
+
+        mst_topcorr_M = nx.to_numpy_array(topcorr_mst_G, nodelist=nodes, weight=None)
+
+
