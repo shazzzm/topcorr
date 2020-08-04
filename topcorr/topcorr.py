@@ -286,7 +286,7 @@ def threshold(corr, threshold, binary=False, absolute=True):
 
     return corr
 
-def calculate_partial_correlation(corr, i, j, k):
+def _calculate_partial_correlation(corr, i, j, k):
     """
     Calculates the partial correlation between i and jm
     given k
@@ -329,7 +329,7 @@ def dependency_network(corr):
             for k in range(p):
                 if i == j or i == k or j == k:
                     continue
-                D[i, j, k] = (corr[i, j] - calculate_partial_correlation(corr, i, j, k))
+                D[i, j, k] = (corr[i, j] - _calculate_partial_correlation(corr, i, j, k))
     
     for i in range(p):
         for j in range(p):
@@ -542,3 +542,82 @@ def almst(corr):
         num+=1
 
     return mst_G
+    
+
+def _mst_forest_function(D, D_orig):
+    """
+    Calculates the new distance matrix for each iteration of the forest procedure
+
+    Parameters
+    -----------
+    D : array_like
+        p x p matrix - current iteration of distance matrix
+
+    D_orig : array_like
+        p x p matrix - original distance matrix
+
+    Returns
+    -------
+    array_like
+        The new distance matrix
+    """
+    p = D.shape[0]
+    D_star = np.zeros((p, p))
+    indices = np.arange(p)
+    for i in range(p):
+        for j in range(p):
+            D_star[i, j] = np.maximum(D[i, :], D_orig[:, j]).min()
+
+    return D_star
+            
+                
+
+def mst_forest(C, tol=1e-3):
+    """
+    Calculates the forest of MSTs as proposed by 
+    "A robust filter in stock networks analysis". You may wish to 
+    round your correlation matrix (C.round(n)) before putting it into this
+    procedure, otherwise floating point equality means you'll just get the MST
+    out.
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix
+
+    tol : float, optional
+        the tolerance by which we consider two floating point numbers equal
+
+    Returns
+    -------
+    networkx graph
+        The resulting forest
+    """
+    p = C.shape[0]
+    D = np.sqrt(2 - 2*C)
+    D_current = D.copy()
+    Ds = [D]
+    lim = int(1.4428 * np.log(p))
+    for i in range(lim):
+        D_current = _mst_forest_function(D_current, D)
+        if np.isclose(D_current, Ds[-1], tol, 1e-5).all():
+            break
+        Ds.append(D_current)
+
+    delta = np.zeros((p, p), dtype=int)
+
+    diff = Ds[-1] - D
+    delta[np.abs(diff) > 1e-3] = 0
+    delta[np.abs(diff) < 1e-3] = 1
+    np.fill_diagonal(delta, 0)
+
+    # Construct the adjacency matrix of the new MST
+    A = np.zeros((p, p))
+    ind = np.nonzero(delta)
+
+    A[ind] = C[ind]
+
+    G = nx.from_numpy_array(A)
+
+    return G
+    

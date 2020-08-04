@@ -199,4 +199,35 @@ class TestTopCorr(unittest.TestCase):
 
         mst_topcorr_M = nx.to_numpy_array(topcorr_mst_G, nodelist=nodes, weight=None)
 
+    def test_forest(self):
+        """
+        Tests the forest construction by firstly ensuring the MSTs are identical when 
+        the correlation matrix only has unique edges, and secondly when the correlation
+        matrix is degenerate
+        """
+        p = 10
+        mean = np.zeros(p)
+        M = make_spd_matrix(p)
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+        nodes = list(np.arange(p))
+        mst = topcorr.mst(corr)
+        forest = topcorr.mst_forest(corr)
+
+        M_mst = nx.to_numpy_array(mst, nodes)
+        M_forest = nx.to_numpy_array(forest, nodes)
+
+        assert_array_almost_equal(M_mst, M_forest)
+
+        example_mat = np.array([[0, 0.1, 0.3, 0.2, 0.1], [0.1, 0, 0.3, 0.4, 1.7], [0.3, 0.3, 0, 0.6, 0.5], [0.2, 0.4, 0.6, 0, 0.2], [0.1, 1.7, 0.5, 0.2, 0]])
+        example_corr = 1-np.power(example_mat,2)/2 
+        forest = topcorr.mst_forest(example_corr)
+        mst = topcorr.mst(example_corr)
+        forest_edges = len(forest.edges)
+        mst_edges = len(mst.edges)
+
+        assert(forest_edges > mst_edges)
+
+        
+
 

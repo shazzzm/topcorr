@@ -59,6 +59,7 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * Partial Correlation
 * Affinity Matrix
 * Average Linkage MST
+* Forest of MSTs
 
 ## References
 * [Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). A tool for filtering information in complex systems. Proceedings of the National Academy of Sciences of the United States of America, 102(30), 10421-10426.](http://www.pnas.org/content/102/30/10421)
@@ -72,4 +73,5 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * [Baruchi I, Grossman D, Volman V, et al. Functional holography analysis: simplifying the complexity of dynamical networks. Chaos. 2006;16(1):015112. doi:10.1063/1.2183408](https://aip.scitation.org/doi/10.1063/1.2183408)
 * [Kenett, D. Y., Shapira, Y., Madi, A., Bransburg-Zabary, S., Gur-Gershgoren, G., & Ben-Jacob, E. (2010). Dynamics of stock market correlations. AUCO Czech Economic Review, 4(3), 330-341.](http://cer.fsv.cuni.cz/mag/article/show/id/97)
 * [Tumminello, M., Coronnello, C., Lillo, F., Micciche, S., & Mantegna, R. N. (2007). Spanning trees and bootstrap reliability estimation in correlation-based networks. International Journal of Bifurcation and Chaos, 17(07), 2319-2329.](https://www.worldscientific.com/doi/abs/10.1142/S0218127407018415)
+* [Maman A. Djauhari (2012). A robust filter in stock networks analysis. Physica A: Statistical Mechanics and its Applications.](https://www.sciencedirect.com/science/article/pii/S0378437112004323)
 
