@@ -620,4 +620,54 @@ def mst_forest(C, tol=1e-3):
     G = nx.from_numpy_array(A)
 
     return G
-    
+
+def dcca(X, s = 4):
+    """
+    Calculates the detrended cross-correlation analysis for a dataset X
+    as proposed by "Detrended Cross-Correlation Analysis: A New Method for
+    Analyzing Two Nonstationary Time Series" by Podobnik and Stanley
+
+    Parameters
+    -----------
+    X : array_like
+        n x p matrix - dataset
+
+    s : int, optional
+        Window size
+
+    Returns
+    -------
+    array_like
+        Correlation matrix
+    """
+    n, p = X.shape
+    cdata = X-X.mean(axis=0)
+    xx = np.cumsum(cdata,axis=0)
+    indices = np.arange(s)[None, :]+np.arange(len(xx)-s+1)[:, None]
+    no_runs = len(indices)
+    ls_res = np.zeros((no_runs, p, s))
+
+    for i,idx in enumerate(indices):
+        xx_current = xx[idx, :]
+        # Calculate the least squares fit of each variable in this time segment
+        for j in range(p):
+            ls_coefs = np.polyfit(np.arange(s), xx_current[:, j], deg=1)      
+            
+            # Calculate the residual
+            ls_res[i, j, :] = xx_current[:, j] - ls_coefs[0] * np.arange(s) - ls_coefs[1]
+
+    f_2_dcca = np.zeros((p, p))
+
+    for i in range(p):
+        for j in range(p):
+            f_2_dcca[i, j] = ((ls_res[:, i, :]).flatten() * (ls_res[:, j, :].flatten())).mean()
+
+    corr = np.zeros((p, p))
+    for i in range(p):
+        for j in range(i+1, p):
+            corr[i, j] = f_2_dcca[i, j]/np.sqrt(f_2_dcca[i, i] * f_2_dcca[j, j])
+
+    corr += corr.T
+    np.fill_diagonal(corr, 1)
+    return corr
+

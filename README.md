@@ -60,6 +60,7 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * Affinity Matrix
 * Average Linkage MST
 * Forest of MSTs
+* Detrended Cross Correlation Analysis
 
 ## References
 * [Tumminello, M., Aste, T., Di Matteo, T., & Mantegna, R. N. (2005). A tool for filtering information in complex systems. Proceedings of the National Academy of Sciences of the United States of America, 102(30), 10421-10426.](http://www.pnas.org/content/102/30/10421)
@@ -74,4 +75,5 @@ This project is licensed under the GNU GPL - see the [LICENSE.md](LICENSE.md) fi
 * [Kenett, D. Y., Shapira, Y., Madi, A., Bransburg-Zabary, S., Gur-Gershgoren, G., & Ben-Jacob, E. (2010). Dynamics of stock market correlations. AUCO Czech Economic Review, 4(3), 330-341.](http://cer.fsv.cuni.cz/mag/article/show/id/97)
 * [Tumminello, M., Coronnello, C., Lillo, F., Micciche, S., & Mantegna, R. N. (2007). Spanning trees and bootstrap reliability estimation in correlation-based networks. International Journal of Bifurcation and Chaos, 17(07), 2319-2329.](https://www.worldscientific.com/doi/abs/10.1142/S0218127407018415)
 * [Maman A. Djauhari (2012). A robust filter in stock networks analysis. Physica A: Statistical Mechanics and its Applications.](https://www.sciencedirect.com/science/article/pii/S0378437112004323)
+* [Podobnik, Boris, and H. Eugene Stanley. "Detrended cross-correlation analysis: a new method for analyzing two nonstationary time series." Physical review letters 100.8 (2008): 084102.](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.100.084102)
 
