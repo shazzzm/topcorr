@@ -29,9 +29,6 @@ pmfg_G = topcorr.pmfg(corr)
 The other methods work in much the same way (bar thresholding) - put in a correlation matrix and
 it will return a networkx graph.
 
-There are some issues with the TMFG implementation right now - it doesn't always seem to pass the
-tests, so be aware when using it.
-
 ## Testing
 
 If you're interested in running the tests they can be found in the /tests/ folder and are to

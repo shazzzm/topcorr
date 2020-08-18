@@ -227,6 +227,7 @@ class TestTopCorr(unittest.TestCase):
         mst_edges = len(mst.edges)
 
         assert(forest_edges > mst_edges)
+        assert(nx.is_connected(forest))
 
     def test_dcca(self):
         """

@@ -596,17 +596,16 @@ def mst_forest(C, tol=1e-3):
     p = C.shape[0]
     D = np.sqrt(2 - 2*C)
     D_current = D.copy()
-    Ds = [D]
+    D_prev = D
     lim = int(1.4428 * np.log(p))
     for i in range(lim):
         D_current = _mst_forest_function(D_current, D)
-        if np.isclose(D_current, Ds[-1], tol, 1e-5).all():
+        if np.isclose(D_current, D_prev, tol, 1e-5).all():
             break
-        Ds.append(D_current)
-
+        D_prev = D_current
     delta = np.zeros((p, p), dtype=int)
 
-    diff = Ds[-1] - D
+    diff = D_current - D
     delta[np.abs(diff) > 1e-3] = 0
     delta[np.abs(diff) < 1e-3] = 1
     np.fill_diagonal(delta, 0)
