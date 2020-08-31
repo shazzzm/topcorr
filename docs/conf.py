@@ -21,6 +21,7 @@ project = 'TopCorr'
 copyright = '2020, Tristan Millington'
 author = 'Tristan Millington'
 
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
