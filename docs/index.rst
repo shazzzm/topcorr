@@ -25,6 +25,16 @@ TopCorr is a small python library for constructing filtered correlation networks
 * Detrended Cross Correlation Analysis
 
 
+As a rule of thumb, if the network returned from a method is sparse, it will be a networkx graph. If it is a dense network, it will be in the form of a correlation matrix.
+
+Methods
+==================
+.. automodule:: topcorr
+	   :members:
+
+.. automodule:: topcorr.topcorr
+	   :members:
+
 Indices and tables
 ==================
 
