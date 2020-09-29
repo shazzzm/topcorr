@@ -55,7 +55,7 @@ def _add_triangular_face(G, new, old_set, C, faces):
     for j in old_set:
         G.add_edge(new, j, weight=C[new, j])
 
-def tmfg(corr, absolute=False):
+def tmfg(corr, absolute=False, threshold_mean=True):
     """
     Constructs a TMFG from the supplied correlation matrix
 
@@ -65,6 +65,9 @@ def tmfg(corr, absolute=False):
         p x p matrix - correlation matrix
     absolute : bool
         whether to use the absolute correlation values for chooisng weights or normal ones
+    threshold_mean : bool
+        this will discard all correlations below the mean value when selecting the first 4 
+        vertices, as in the original implementation
 
     Returns
     -------
@@ -79,13 +82,15 @@ def tmfg(corr, absolute=False):
         weight_corr = corr
 
     # Find the 4 most central vertices
-    degree_centrality = weight_corr.sum(axis=0)
+    new_weight = weight_corr.copy()
+    if threshold_mean:
+        new_weight[new_weight < new_weight.mean()] = 0
+    degree_centrality = new_weight.sum(axis=0)
     ind = np.argsort(degree_centrality)[::-1]
     starters = ind[0:4]
     starters_set = set(starters)
     not_in = set(range(p))
     not_in = not_in.difference(starters_set)
-
     G = nx.Graph()
     G.add_nodes_from(range(p))
 
