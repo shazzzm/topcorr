@@ -50,6 +50,9 @@ class TestTopCorr(unittest.TestCase):
         np.fill_diagonal(tmfg_me, 1)
         assert_array_almost_equal(tmfg_r, tmfg_me)
 
+        G = topcorr.tmfg(corr, threshold_mean=False)
+        assert(nx.check_planarity(G)[0])
+
     def test_pmfg(self):
         """
         Tests the PMFG - the way we're going to do this is by generating a

@@ -109,7 +109,7 @@ def tmfg(corr, absolute=False, threshold_mean=True):
     while len(not_in) > 0:
         #to_check = permutations(starters_set, 3)
 
-        max_corr = -1
+        max_corr = -np.inf
         max_i = -1
         nodes_correlated_with = None
         not_in_arr = np.array(list(not_in))
