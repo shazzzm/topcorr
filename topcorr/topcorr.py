@@ -1,6 +1,8 @@
 import networkx as nx
 import collections
 import numpy as np
+from functools import partial
+import operator
 
 def _calculate_new_faces(faces, new, old_set):
     """
@@ -226,8 +228,8 @@ def _merge_components(components, i, j):
 
     del components[c2_i]
     return components
-    
-def mst(corr):
+
+def mst(corr, algorithm = "kruskal"):
     """
     Constructs a minimum spanning tree from the specified correlation matrix
 
@@ -236,7 +238,31 @@ def mst(corr):
     corr : array_like
         p x p matrix - correlation matrix
 
+    algorithm : string 
+        indicates which algorithm to use - currently either "prim" or "kruskal"
     Returns
+    -------
+    networkx graph
+        The Minimum Spanning Tree
+    """
+
+    if algorithm == "prim":
+        return(_prim(corr))
+    else :
+        return(_kruskal(corr))
+
+
+def _kruskal(corr):
+    """
+    Constructs a minimum spanning tree using Kruskal's algorithm from the specified
+    correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix
+
+        Returns
     -------
     networkx graph
         The Minimum Spanning Tree
@@ -257,6 +283,49 @@ def mst(corr):
             components = _merge_components(components, idx_i, idx_j)
         if len(mst_G.edges()) == p - 1:
             break
+
+    return mst_G
+
+def _prim(corr):
+    """
+    Constructs a minimum spanning tree using Prim's algorithm from the specified
+    correlation matrix
+
+    Parameters
+    -----------
+    corr : array_like
+        p x p matrix - correlation matrix
+
+        Returns
+    -------
+    networkx graph
+        The Minimum Spanning Tree
+    """
+    p = corr.shape[0]
+    mst_G = nx.Graph()
+
+    starting_node = 0 # TODO: Make this random
+    nodes_in_tree = [starting_node]
+    nodes_not_in_tree = list(range(1, p))
+    for i in range(p-1):
+        # Find the edge with the highest correlation to a vertex
+        # not already in the graph
+        sub_matrix = corr[np.array(nodes_in_tree), :][:, np.array(nodes_not_in_tree)]
+        largest_edge = np.argmax(sub_matrix)
+        if i == 0:
+            mst_G.add_edge(starting_node, largest_edge+1, weight = corr[starting_node, largest_edge+1])
+            nodes_in_tree.append(largest_edge+1)
+            nodes_not_in_tree.remove(largest_edge+1)
+        else:
+            i,j = np.unravel_index(largest_edge, sub_matrix.shape)
+
+            # Turn i and j from local coordinates in the submatrix to ones from the whole
+            # correlation matrix
+            node_to_add_1 = nodes_in_tree[i]
+            node_to_add_2 = nodes_not_in_tree[j]
+            mst_G.add_edge(node_to_add_1, node_to_add_2, weight = corr[node_to_add_1, node_to_add_2])
+            nodes_in_tree.append(node_to_add_2)
+            nodes_not_in_tree.remove(node_to_add_2)
 
     return mst_G
 
@@ -674,4 +743,57 @@ def dcca(X, s = 4):
     corr += corr.T
     np.fill_diagonal(corr, 1)
     return corr
+
+def change_point_detection(X, window_size=50, delta=100, num_bootstraps=50, bootstrap_size=50):
+    """
+    Detects the probability of a change point at each location
+    """
+
+    n, p = X.shape
+
+    ks = np.arange(delta, n-delta)
+    diffs = collections.defaultdict(partial(np.zeros, num_bootstraps))
+    
+    for i in range(num_bootstraps):
+        ind = np.random.randint(0, n, size=bootstrap_size, dtype=int)
+        for k in ks:
+            ind_old = ind[ind <= k]
+            ind_new = ind[ind > k]
+
+            X_old = X[ind_old, :]
+            X_new = X[ind_new, :]
+
+            corr_old = np.corrcoef(X_old.T)
+            corr_new = np.corrcoef(X_new.T)
+
+            diffs[k][i] = np.linalg.norm(corr_new - corr_old)
+
+    zscores = dict()
+    z_b = np.zeros(num_bootstraps)
+    zscores_bootstrap = collections.defaultdict(partial(np.zeros, num_bootstraps))
+
+    for k in ks:       
+        X_old = X[0:k, :]
+        X_new = X[k+1:, :]
+
+        corr_old = np.corrcoef(X_old.T)
+        corr_new = np.corrcoef(X_new.T)
+
+        diff = np.linalg.norm(corr_new - corr_old)
+        zscores[k] = (diff - np.mean(diffs[k])) / np.std(diffs[k])
+
+        for i in range(num_bootstraps):
+            zscores_bootstrap[k][i] = (diffs[k][i] - np.mean(diffs[k])) / np.std(diffs[k])
+
+    for i in range(num_bootstraps):
+        max_z_b = -1
+        for k in ks:
+            if zscores_bootstrap[k].max() > max_z_b:
+                max_z_b = zscores_bootstrap[k].max()
+
+    max_k = max(zscores.items(), key=operator.itemgetter(1))[0]
+    max_z = zscores[max_k]
+    pval = (1/num_bootstraps) * np.count_nonzero(max_z_b > max_z)
+
+    return max_k, max_z, pval, zscores
 

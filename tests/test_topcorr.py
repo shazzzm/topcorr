@@ -102,6 +102,30 @@ class TestTopCorr(unittest.TestCase):
 
         assert_array_almost_equal(mst_nx_M, mst_topcorr_M)
 
+    def test_prim(self):
+        """
+        Tests the implementation of Prim's algorithm by comparing it to the networkx
+        implementation
+        """
+        p = 10
+        mean = np.zeros(p)
+        M = make_spd_matrix(p)
+        X = np.random.multivariate_normal(mean, M, 200)
+        corr = np.corrcoef(X.T)
+        nodes = list(np.arange(p))
+        # For the networkx MST we have to convert the correlation graph
+        # into a distance one
+        D = np.sqrt(2 - 2*corr)
+        G = nx.from_numpy_array(D)
+        mst_G = nx.minimum_spanning_tree(G, algorithm="prim")
+
+        topcorr_mst_G = topcorr.mst(corr, algorithm="prim")
+
+        mst_nx_M = nx.to_numpy_array(mst_G, nodelist=nodes, weight=None)
+        mst_topcorr_M = nx.to_numpy_array(topcorr_mst_G, nodelist=nodes, weight=None)
+
+        assert_array_almost_equal(mst_nx_M, mst_topcorr_M)
+
     def test_threshold(self):
         """
         Tests the thresholding of the correlation matrix - here we add a 
