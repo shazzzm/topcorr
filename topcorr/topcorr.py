@@ -744,56 +744,29 @@ def dcca(X, s = 4):
     np.fill_diagonal(corr, 1)
     return corr
 
-def change_point_detection(X, window_size=50, delta=100, num_bootstraps=50, bootstrap_size=50):
+def covariance_to_correlation_matrix(C):
     """
-    Detects the probability of a change point at each location
+    Converts a covariance matrix to a correlation matrix
+
+    Parameters
+    -----------
+    C : array_like
+        p x p matrix - covariance matrix
+
+    Returns
+    -------
+    array_like
+        Correlation matrix
     """
 
-    n, p = X.shape
+    corr = np.eye(C.shape)
 
-    ks = np.arange(delta, n-delta)
-    diffs = collections.defaultdict(partial(np.zeros, num_bootstraps))
-    
-    for i in range(num_bootstraps):
-        ind = np.random.randint(0, n, size=bootstrap_size, dtype=int)
-        for k in ks:
-            ind_old = ind[ind <= k]
-            ind_new = ind[ind > k]
+    p = C.shape[0]
 
-            X_old = X[ind_old, :]
-            X_new = X[ind_new, :]
+    for i in range(p):
+        for j in range(p):
+            if i == j:
+                continue
+            corr[i, j] = C[i, j] / np.sqrt(C[i, i], C[j, j])
 
-            corr_old = np.corrcoef(X_old.T)
-            corr_new = np.corrcoef(X_new.T)
-
-            diffs[k][i] = np.linalg.norm(corr_new - corr_old)
-
-    zscores = dict()
-    z_b = np.zeros(num_bootstraps)
-    zscores_bootstrap = collections.defaultdict(partial(np.zeros, num_bootstraps))
-
-    for k in ks:       
-        X_old = X[0:k, :]
-        X_new = X[k+1:, :]
-
-        corr_old = np.corrcoef(X_old.T)
-        corr_new = np.corrcoef(X_new.T)
-
-        diff = np.linalg.norm(corr_new - corr_old)
-        zscores[k] = (diff - np.mean(diffs[k])) / np.std(diffs[k])
-
-        for i in range(num_bootstraps):
-            zscores_bootstrap[k][i] = (diffs[k][i] - np.mean(diffs[k])) / np.std(diffs[k])
-
-    for i in range(num_bootstraps):
-        max_z_b = -1
-        for k in ks:
-            if zscores_bootstrap[k].max() > max_z_b:
-                max_z_b = zscores_bootstrap[k].max()
-
-    max_k = max(zscores.items(), key=operator.itemgetter(1))[0]
-    max_z = zscores[max_k]
-    pval = (1/num_bootstraps) * np.count_nonzero(max_z_b > max_z)
-
-    return max_k, max_z, pval, zscores
-
+    return corr
