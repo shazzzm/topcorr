@@ -758,15 +758,15 @@ def covariance_to_correlation_matrix(C):
     array_like
         Correlation matrix
     """
-
-    corr = np.eye(C.shape)
-
     p = C.shape[0]
+
+    corr = np.eye(p)
+
 
     for i in range(p):
         for j in range(p):
             if i == j:
                 continue
-            corr[i, j] = C[i, j] / np.sqrt(C[i, i], C[j, j])
+            corr[i, j] = C[i, j] / np.sqrt(C[i, i] * C[j, j])
 
     return corr
